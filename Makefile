@@ -1,6 +1,7 @@
 SHELL := nix-shell
 .SHELLFLAGS := --run
 
+CPUS := $(shell nproc --all)
 PROG := SystemMonitorColors.hs
 RUNGHC := runghc -Wall -Wcompat
 
@@ -10,13 +11,13 @@ check:
 	$(RUNGHC) $(PROG) --unit
 
 set:
-	dconf write /org/gnome/gnome-system-monitor/cpu-colors "$$($(RUNGHC) $(PROG) -d)"
+	dconf write /org/gnome/gnome-system-monitor/cpu-colors "$$($(RUNGHC) $(PROG) -c $(CPUS) -d)"
 
 stress:
-	stress -c 16
+	stress -c $(CPUS)
 
 test-colors.html: $(PROG)
-	$(RUNGHC) $< --html >$@
+	$(RUNGHC) $< -c $(CPUS) --html >$@
 
 clean:
 	$(RM) test-colors.html

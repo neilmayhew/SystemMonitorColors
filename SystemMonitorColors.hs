@@ -2,6 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 
+import Control.Concurrent (getNumCapabilities)
 import Control.Monad
 import Data.Foldable
 import Data.List (intercalate)
@@ -22,12 +23,14 @@ data Options = Options
   , optAnalyze :: Bool
   , optDconf :: Bool
   , optHtml :: Bool
+  , optCPUs :: Int
   } deriving (Show)
 
 main :: IO ()
 main = do
 
   cols <- maybe 100 TS.width <$> TS.size
+  capabilities <- getNumCapabilities
 
   Options {..} <- customExecParser
     ( prefs $ columns cols )
@@ -48,6 +51,9 @@ main = do
           optHtml <- switch $
             short 'm' <> long "html" <>
             help "Output an HTML file for previewing the colors"
+          optCPUs <- option auto $
+            short 'c' <> long "cpus" <> metavar "N" <> value capabilities <>
+            help "Generate cpu-colors for N CPUs" <> showDefault
           pure Options{..}
       )
       ( fullDesc <> header "Generate CPU colors for use in Gnome System Monitor" )
@@ -72,20 +78,21 @@ main = do
           let rgb' = fromCSShex css
               hsv' = liftPixel rgb2hsv $ fromPixel8 rgb'
               (h, _, _) = toComponents $ pixelColor hsv'
-          printf "%s -> %s -> %s (%5.2f)\n" css (show rgb') (show hsv') (h * 16)
+          printf "%s -> %s -> %s (%5.2f)\n" css (show rgb') (show hsv') (h * fromIntegral optCPUs)
     putStrLn "Default"
     traverse_ analyze defaultColors
     putStrLn "Existing"
     traverse_ analyze existingColors
 
   let interpolate t a b = a * (1 - t) + b * t
+      maxCPU = fromIntegral $ optCPUs - 1 :: Double
       colors =
         [ hsv
-          ( interpolate (n / 15) 0.35 1.15 * 360
-          , interpolate (n / 15) 0.9 0.6
-          , interpolate (n / 15) 0.7 1.0
+          ( interpolate (n / maxCPU) 0.35 1.15 * 360
+          , interpolate (n / maxCPU) 0.9 0.6
+          , interpolate (n / maxCPU) 0.7 1.0
           )
-          | n <- [0 .. 15 :: Double]
+          | n <- [0 .. maxCPU]
         ]
 
   when optDconf $ do
