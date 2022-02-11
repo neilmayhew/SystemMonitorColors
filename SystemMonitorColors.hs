@@ -1,5 +1,4 @@
 {-# LANGUAGE ApplicativeDo #-}
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 
@@ -12,7 +11,6 @@ import Graphics.Pixel
 import Numeric
 import Options.Applicative
 import System.Environment
-import System.Exit
 import Test.Hspec
 import Text.Printf
 
