@@ -2,6 +2,12 @@
 
 Generate and set colors for the CPU graph in the Gnome System Monitor application.
 
+## Screenshot ##
+
+![Screenshot](Screenshot.png)
+
+This is with the "Stacked Area Chart" option selected in System Monitor.
+
 ## Usage ##
 
 | Command                 | Purpose                                                     |
