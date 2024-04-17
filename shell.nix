@@ -11,5 +11,6 @@ mkShell rec {
       terminal-size
     ]))
     stress
+    dconf
   ];
 }

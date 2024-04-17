@@ -1,5 +1,5 @@
 SHELL := nix-shell
-.SHELLFLAGS := --run
+.SHELLFLAGS := --pure --run
 
 CPUS := $(shell nproc --all)
 PROG := SystemMonitorColors.hs
