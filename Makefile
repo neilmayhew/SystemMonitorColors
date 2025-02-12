@@ -1,7 +1,8 @@
 SHELL := nix-shell
-.SHELLFLAGS := --pure --run
+.SHELLFLAGS := --pure --quiet --keep DBUS_SESSION_BUS_ADDRESS --run
 
 CPUS := $(shell nproc --all)
+TIMEOUT := 60
 PROG := SystemMonitorColors.hs
 RUNGHC := runghc -Wall -Wcompat
 
@@ -14,7 +15,7 @@ set:
 	dconf write /org/gnome/gnome-system-monitor/cpu-colors "$$($(RUNGHC) $(PROG) -c $(CPUS) -d)"
 
 stress:
-	stress -c $(CPUS)
+	stress -c $(CPUS) -t $(TIMEOUT)
 
 test-colors.html: $(PROG)
 	$(RUNGHC) $< -c $(CPUS) --html >$@
