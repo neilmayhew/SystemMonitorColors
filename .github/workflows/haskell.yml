@@ -3,6 +3,9 @@ name: "Haskell CI"
 on:
   pull_request:
   push:
+  workflow_dispatch:  # For manual triggering
+  schedule:
+  - cron: "3 14 15 * *"  # 14:03 on the 15th of every month (UTC)
 
 jobs:
   test:
